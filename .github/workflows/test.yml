@@ -34,8 +34,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Install dependencies
-        run: go mod download
+      - name: Initialize Go module
+        run: |
+          go mod init go-server || true
+          go mod tidy
 
       - name: Run linting
         run: |
