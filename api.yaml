@@ -1,0 +1,600 @@
+openapi: 3.0.3
+info:
+  title: Go Server API
+  description: |
+    A modular Go server that responds to JSON requests using only the standard library.
+
+    ## Features
+    - RESTful API endpoints
+    - Unified JSON API interface
+    - System metrics and monitoring
+    - Health checks and status reporting
+    - Graceful shutdown support
+    - Structured logging
+
+    ## Getting Started
+    1. Start the server: `go run main.go`
+    2. Check health: `GET /health`
+    3. View documentation: `GET /`
+
+    ## Base URL
+    - Development: `http://localhost:8080`
+    - Production: Configure via `PORT` environment variable
+  version: 1.0.0
+  contact:
+    name: Go Server API
+    url: https://github.com/your-org/go-server
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:8080
+    description: Development server
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Check if the server is running and healthy
+      operationId: getHealth
+      tags:
+        - System
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /version:
+    get:
+      summary: Version Information
+      description: Get server version and runtime information
+      operationId: getVersion
+      tags:
+        - System
+      responses:
+        "200":
+          description: Version information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionResponse"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /metrics:
+    get:
+      summary: System Metrics
+      description: Get system metrics including memory usage and runtime statistics
+      operationId: getMetrics
+      tags:
+        - Monitoring
+      responses:
+        "200":
+          description: Metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsResponse"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /config:
+    get:
+      summary: Server Configuration
+      description: Get server configuration and environment settings
+      operationId: getConfig
+      tags:
+        - System
+      responses:
+        "200":
+          description: Configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigResponse"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /status:
+    get:
+      summary: Detailed Status
+      description: Get comprehensive server status including system information and metrics
+      operationId: getStatus
+      tags:
+        - System
+      responses:
+        "200":
+          description: Status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusResponse"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api:
+    post:
+      summary: Main API Endpoint
+      description: Process JSON requests with various actions
+      operationId: processAPIRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/APIRequest"
+            examples:
+              echo:
+                summary: Echo Example
+                value:
+                  message: "Hello World"
+                  action: "echo"
+              greet:
+                summary: Greet Example
+                value:
+                  message: "Nice to meet you"
+                  user_id: 123
+                  action: "greet"
+              info:
+                summary: Info Example
+                value:
+                  message: "Tell me about the server"
+                  action: "info"
+      responses:
+        "200":
+          description: Request processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIResponse"
+              examples:
+                echo_success:
+                  summary: Echo Success
+                  value:
+                    status: "success"
+                    message: "Echo successful"
+                    timestamp: "2024-01-01T12:00:00Z"
+                    data:
+                      echoed_message: "Hello World"
+                greet_success:
+                  summary: Greet Success
+                  value:
+                    status: "success"
+                    message: "Greeting generated"
+                    timestamp: "2024-01-01T12:00:00Z"
+                    data:
+                      greeting: "Hello User 123! You said: Nice to meet you"
+                info_success:
+                  summary: Info Success
+                  value:
+                    status: "success"
+                    message: "Server information"
+                    timestamp: "2024-01-01T12:00:00Z"
+                    data:
+                      server: "go-server"
+                      version: "1.0.0"
+                      port: "8080"
+                      user_input: "Tell me about the server"
+        "400":
+          description: Bad request - Invalid JSON or validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalid_json:
+                  summary: Invalid JSON
+                  value:
+                    status: "error"
+                    message: "Invalid JSON format"
+                    timestamp: "2024-01-01T12:00:00Z"
+                validation_error:
+                  summary: Validation Error
+                  value:
+                    status: "error"
+                    message: "message is required"
+                    timestamp: "2024-01-01T12:00:00Z"
+                unknown_action:
+                  summary: Unknown Action
+                  value:
+                    status: "error"
+                    message: "Unknown action 'invalid'. Supported actions: [echo, greet, info]"
+                    timestamp: "2024-01-01T12:00:00Z"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    VersionResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+        - data
+      properties:
+        status:
+          type: string
+          description: Response status
+          example: "success"
+        message:
+          type: string
+          description: Response message
+          example: "Version information"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-01T12:00:00Z"
+        data:
+          type: object
+          required:
+            - server
+            - version
+            - go_version
+            - os
+            - arch
+            - num_cpu
+          properties:
+            server:
+              type: string
+              description: Server name
+              example: "go-server"
+            version:
+              type: string
+              description: Server version
+              example: "1.0.0"
+            go_version:
+              type: string
+              description: Go runtime version
+              example: "go1.21.0"
+            os:
+              type: string
+              description: Operating system
+              example: "linux"
+            arch:
+              type: string
+              description: Architecture
+              example: "amd64"
+            num_cpu:
+              type: integer
+              description: Number of CPUs
+              example: 4
+    MetricsResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+        - data
+      properties:
+        status:
+          type: string
+          description: Response status
+          example: "success"
+        message:
+          type: string
+          description: Response message
+          example: "System metrics"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-01T12:00:00Z"
+        data:
+          type: object
+          required:
+            - memory
+            - runtime
+            - timestamp
+          properties:
+            memory:
+              type: object
+              properties:
+                alloc_mb:
+                  type: integer
+                  description: Allocated memory in MB
+                  example: 2
+                total_alloc_mb:
+                  type: integer
+                  description: Total allocated memory in MB
+                  example: 10
+                sys_mb:
+                  type: integer
+                  description: System memory in MB
+                  example: 8
+                num_gc:
+                  type: integer
+                  description: Number of garbage collections
+                  example: 5
+                gc_cpu_fraction:
+                  type: number
+                  format: float
+                  description: GC CPU fraction
+                  example: 0.001
+            runtime:
+              type: object
+              properties:
+                goroutines:
+                  type: integer
+                  description: Number of goroutines
+                  example: 12
+                cpus:
+                  type: integer
+                  description: Number of CPUs
+                  example: 4
+            timestamp:
+              type: integer
+              description: Unix timestamp
+              example: 1704110400
+    ConfigResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+        - data
+      properties:
+        status:
+          type: string
+          description: Response status
+          example: "success"
+        message:
+          type: string
+          description: Response message
+          example: "Server configuration"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-01T12:00:00Z"
+        data:
+          type: object
+          required:
+            - server
+            - environment
+            - features
+          properties:
+            server:
+              type: object
+              properties:
+                port:
+                  type: string
+                  description: Server port
+                  example: "8080"
+                host:
+                  type: string
+                  description: Server host
+                  example: "localhost"
+            environment:
+              type: object
+              properties:
+                go_env:
+                  type: string
+                  description: Go environment
+                  example: "production"
+                port:
+                  type: string
+                  description: Port from environment
+                  example: "8080"
+                log_level:
+                  type: string
+                  description: Log level
+                  example: "info"
+            features:
+              type: object
+              properties:
+                graceful_shutdown:
+                  type: boolean
+                  description: Graceful shutdown enabled
+                  example: true
+                request_validation:
+                  type: boolean
+                  description: Request validation enabled
+                  example: true
+                structured_logging:
+                  type: boolean
+                  description: Structured logging enabled
+                  example: true
+                metrics:
+                  type: boolean
+                  description: Metrics enabled
+                  example: true
+    StatusResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+        - data
+      properties:
+        status:
+          type: string
+          description: Response status
+          example: "success"
+        message:
+          type: string
+          description: Response message
+          example: "Detailed server status"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-01T12:00:00Z"
+        data:
+          type: object
+          required:
+            - status
+            - server
+            - system
+            - memory
+            - timestamp
+          properties:
+            status:
+              type: string
+              description: Server status
+              example: "healthy"
+            server:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "go-server"
+                version:
+                  type: string
+                  example: "1.0.0"
+                port:
+                  type: string
+                  example: "8080"
+                uptime:
+                  type: string
+                  example: "running"
+            system:
+              type: object
+              properties:
+                go_version:
+                  type: string
+                  example: "go1.21.0"
+                os:
+                  type: string
+                  example: "linux"
+                arch:
+                  type: string
+                  example: "amd64"
+                goroutines:
+                  type: integer
+                  example: 12
+                cpus:
+                  type: integer
+                  example: 4
+            memory:
+              type: object
+              properties:
+                alloc_mb:
+                  type: integer
+                  example: 2
+                total_alloc_mb:
+                  type: integer
+                  example: 10
+                sys_mb:
+                  type: integer
+                  example: 8
+                num_gc:
+                  type: integer
+                  example: 5
+            timestamp:
+              type: string
+              format: date-time
+              example: "2024-01-01T12:00:00Z"
+    APIRequest:
+      type: object
+      required:
+        - message
+        - action
+      properties:
+        message:
+          type: string
+          description: The message to process
+          example: "Hello World"
+        user_id:
+          type: integer
+          description: Optional user identifier
+          example: 123
+        action:
+          type: string
+          description: The action to perform
+          enum: [echo, greet, info]
+          example: "echo"
+    APIResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+      properties:
+        status:
+          type: string
+          description: Response status
+          enum: [success, error]
+          example: "success"
+        message:
+          type: string
+          description: Response message
+          example: "Echo successful"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-01T12:00:00Z"
+        data:
+          type: object
+          description: Additional response data
+          additionalProperties: true
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+      properties:
+        status:
+          type: string
+          description: Health status
+          example: "healthy"
+        message:
+          type: string
+          description: Health message
+          example: "Server is running"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-01T12:00:00Z"
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+      properties:
+        status:
+          type: string
+          description: Error status
+          example: "error"
+        message:
+          type: string
+          description: Error message
+          example: "Invalid JSON format"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-01T12:00:00Z"

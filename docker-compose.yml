@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  go-server:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - LOG_LEVEL=info
+      - SERVER_PORT=8080
+      - MAX_REQUEST_SIZE=1048576
+      - RATE_LIMIT_RPS=100
+      - RATE_LIMIT_BURST=200
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - go-server-network
+
+  # Optional: Add a reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - go-server
+    restart: unless-stopped
+    networks:
+      - go-server-network
+    profiles:
+      - production
+
+networks:
+  go-server-network:
+    driver: bridge
+
+volumes:
+  go-server-data:

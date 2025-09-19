@@ -1,0 +1,89 @@
+# Test Configuration
+# This file contains configuration for automated testing
+
+# Test environment settings
+environment:
+  server_port: 8080
+  timeout: 30s
+  retry_attempts: 3
+  retry_delay: 1s
+
+# Test data
+test_data:
+  valid_requests:
+    - message: "Hello World"
+      action: "echo"
+      user_id: 123
+    - message: "John"
+      action: "greet"
+      user_id: 456
+    - message: "test"
+      action: "info"
+      user_id: 789
+
+  invalid_requests:
+    - message: ""
+      action: "echo"
+      user_id: 123
+    - message: "test"
+      action: "invalid_action"
+      user_id: 123
+    - message: "test"
+      action: "echo"
+      user_id: -1
+
+# Performance test settings
+performance:
+  load_test:
+    concurrency: 10
+    duration: 30s
+    requests_per_second: 100
+    success_rate_threshold: 95.0
+
+  memory_test:
+    max_memory_mb: 100
+    test_iterations: 1000
+
+  benchmark:
+    iterations: 1000
+    timeout: 60s
+
+# Coverage settings
+coverage:
+  minimum_coverage: 80.0
+  exclude_patterns:
+    - "test/"
+    - "main.go"
+    - "internal/docs/"
+
+# Security test settings
+security:
+  max_request_size: 1048576 # 1MB
+  rate_limit_rps: 100
+  rate_limit_burst: 200
+
+  headers_to_check:
+    - "X-Content-Type-Options"
+    - "X-Frame-Options"
+    - "X-XSS-Protection"
+    - "Referrer-Policy"
+    - "Content-Security-Policy"
+
+  cors_headers_to_check:
+    - "Access-Control-Allow-Origin"
+    - "Access-Control-Allow-Methods"
+    - "Access-Control-Allow-Headers"
+
+# Test reporting
+reporting:
+  output_format: "html"
+  include_coverage: true
+  include_performance: true
+  include_security: true
+
+  thresholds:
+    unit_tests: 100.0
+    integration_tests: 100.0
+    e2e_tests: 100.0
+    performance_tests: 95.0
+    security_tests: 100.0

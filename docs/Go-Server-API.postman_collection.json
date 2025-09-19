@@ -1,0 +1,236 @@
+{
+  "info": {
+    "_postman_id": "go-server-api",
+    "name": "Go Server API",
+    "description": "Complete API collection for the Go Server",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Version Information",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/version",
+          "host": ["{{base_url}}"],
+          "path": ["version"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "System Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/metrics",
+          "host": ["{{base_url}}"],
+          "path": ["metrics"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Server Configuration",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/config",
+          "host": ["{{base_url}}"],
+          "path": ["config"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Detailed Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/status",
+          "host": ["{{base_url}}"],
+          "path": ["status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API - Echo",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Hello World\",\n  \"action\": \"echo\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API - Greet",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Nice to meet you\",\n  \"user_id\": 123,\n  \"action\": \"greet\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API - Info",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Tell me about the server\",\n  \"action\": \"info\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API - Version",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"version\",\n  \"action\": \"version\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API - Metrics",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"metrics\",\n  \"action\": \"metrics\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API - Config",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"config\",\n  \"action\": \"config\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API - Status",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"status\",\n  \"action\": \"status\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
