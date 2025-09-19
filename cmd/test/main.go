@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"go-server/internal/testrunner"
-	"go-server/internal/testrunner/types"
+	"github.com/radiancelux/go-server/internal/testrunner"
+	"github.com/radiancelux/go-server/internal/testrunner/types"
 )
 
 func main() {

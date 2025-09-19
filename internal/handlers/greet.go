@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"fmt"
-	"go-server/internal/interfaces"
-	"go-server/internal/models"
+	"github.com/radiancelux/go-server/internal/interfaces"
+	"github.com/radiancelux/go-server/internal/models"
 )
 
 // GreetHandler handles greeting requests

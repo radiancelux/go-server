@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"go-server/internal/config"
-	"go-server/internal/logger"
+	"github.com/radiancelux/go-server/internal/config"
+	"github.com/radiancelux/go-server/internal/logger"
 )
 
 func TestRequestIDMiddleware(t *testing.T) {
