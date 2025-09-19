@@ -27,7 +27,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Cache Go modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -63,14 +63,14 @@ jobs:
           go tool cover -html=coverage.out -o coverage.html
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage.out
           flags: unittests
           name: codecov-umbrella
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results-go-${{ matrix.go-version }}
@@ -105,7 +105,7 @@ jobs:
           GOOS=darwin GOARCH=amd64 go build -o bin/go-server-darwin-amd64 main.go
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: go-server-binaries
           path: bin/
