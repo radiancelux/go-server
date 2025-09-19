@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/radiancelux/go-server/internal/config"
-	"github.com/radiancelux/go-server/internal/errors"
-	"github.com/radiancelux/go-server/internal/interfaces"
+	"go-server/internal/config"
+	"go-server/internal/errors"
+	"go-server/internal/interfaces"
 )
 
 // RequestIDKey is the context key for request ID

@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/radiancelux/go-server/internal/interfaces"
-	"github.com/radiancelux/go-server/internal/models"
+	"go-server/internal/interfaces"
+	"go-server/internal/models"
 	"runtime"
 )
 

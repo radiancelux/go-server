@@ -1,5 +1,3 @@
-module github.com/radiancelux/go-server
+module go-server
 
 go 1.21
-
-replace github.com/radiancelux/go-server => ./

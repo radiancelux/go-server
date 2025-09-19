@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/radiancelux/go-server/internal/testrunner/executors"
-	"github.com/radiancelux/go-server/internal/testrunner/reporting"
-	"github.com/radiancelux/go-server/internal/testrunner/types"
+	"go-server/internal/testrunner/executors"
+	"go-server/internal/testrunner/reporting"
+	"go-server/internal/testrunner/types"
 )
 
 // TestRunner orchestrates test execution
