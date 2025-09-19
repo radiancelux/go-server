@@ -50,7 +50,13 @@ func (r Response) GetTimestamp() time.Time { return r.Timestamp }
 // GetData returns the optional response data.
 func (r Response) GetData() any { return r.Data }
 
+// GetSuccess returns true if the response status is "success".
+func (r Response) GetSuccess() bool { return r.Status == "success" }
+
 // ToJSON serializes the response to JSON bytes.
 func (r Response) ToJSON() ([]byte, error) {
 	return json.Marshal(r)
 }
+
+// APIResponse is an alias for Response for backward compatibility
+type APIResponse = Response

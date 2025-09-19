@@ -5,6 +5,14 @@ import (
 	"os"
 )
 
+// Logger interface defines the logging methods
+type Logger interface {
+	Info(msg string, args ...any)
+	Error(msg string, args ...any)
+	Debug(msg string, args ...any)
+	Warn(msg string, args ...any)
+}
+
 // ServerLogger implements the Logger interface
 type ServerLogger struct {
 	logger *log.Logger
@@ -30,4 +38,9 @@ func (l *ServerLogger) Error(msg string, args ...any) {
 // Debug logs a debug message
 func (l *ServerLogger) Debug(msg string, args ...any) {
 	l.logger.Printf("[DEBUG] "+msg, args...)
+}
+
+// Warn logs a warning message
+func (l *ServerLogger) Warn(msg string, args ...any) {
+	l.logger.Printf("[WARN] "+msg, args...)
 }

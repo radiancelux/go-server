@@ -39,3 +39,46 @@ func (r Request) Validate() error {
 	}
 	return nil
 }
+
+// APIRequest represents the incoming JSON request structure for API endpoints
+type APIRequest struct {
+	Action string                 `json:"action"`
+	Data   map[string]interface{} `json:"data,omitempty"`
+}
+
+// NewAPIRequest creates a new APIRequest instance
+func NewAPIRequest(action string, data map[string]interface{}) *APIRequest {
+	return &APIRequest{
+		Action: action,
+		Data:   data,
+	}
+}
+
+// GetMessage returns the message (implements APIRequest interface)
+func (r APIRequest) GetMessage() string {
+	if msg, ok := r.Data["message"].(string); ok {
+		return msg
+	}
+	return ""
+}
+
+// GetUserID returns the user ID (implements APIRequest interface)
+func (r APIRequest) GetUserID() int {
+	if userID, ok := r.Data["user_id"].(float64); ok {
+		return int(userID)
+	}
+	return 0
+}
+
+// GetAction returns the action (implements APIRequest interface)
+func (r APIRequest) GetAction() string {
+	return r.Action
+}
+
+// Validate validates the API request (implements APIRequest interface)
+func (r APIRequest) Validate() error {
+	if r.Action == "" {
+		return fmt.Errorf("action is required")
+	}
+	return nil
+}

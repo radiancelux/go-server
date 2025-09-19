@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -116,4 +117,40 @@ func WrapErrorWithType(err error, errorType ErrorType, message string, statusCod
 		Details:    err.Error(),
 		StatusCode: statusCode,
 	}
+}
+
+// WriteErrorResponse writes an error response to the HTTP response writer
+func WriteErrorResponse(w http.ResponseWriter, statusCode int, message, code string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+
+	errorResponse := APIError{
+		Type:       ErrorTypeInternal,
+		Message:    message,
+		Code:       code,
+		StatusCode: statusCode,
+	}
+
+	// Set appropriate error type based on status code
+	switch statusCode {
+	case http.StatusBadRequest:
+		errorResponse.Type = ErrorTypeBadRequest
+	case http.StatusUnauthorized:
+		errorResponse.Type = ErrorTypeUnauthorized
+	case http.StatusForbidden:
+		errorResponse.Type = ErrorTypeForbidden
+	case http.StatusNotFound:
+		errorResponse.Type = ErrorTypeNotFound
+	case http.StatusConflict:
+		errorResponse.Type = ErrorTypeConflict
+	case http.StatusTooManyRequests:
+		errorResponse.Type = ErrorTypeRateLimit
+	}
+
+	json.NewEncoder(w).Encode(errorResponse)
+}
+
+// NewValidationError creates a new validation error
+func NewValidationError(field, message string) *APIError {
+	return NewAPIErrorWithCode(ErrorTypeValidation, "VALIDATION_ERROR", message, http.StatusBadRequest).WithDetails(field)
 }
