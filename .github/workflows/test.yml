@@ -26,10 +26,8 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Set up Go module
-        run: |
-          go mod init go-server
-          go mod tidy
+      - name: Install dependencies
+        run: go mod download
 
       - name: Run linting
         run: |
