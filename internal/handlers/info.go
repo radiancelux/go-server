@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-server/internal/interfaces"
-	"go-server/internal/models"
+	"github.com/radiancelux/go-server/internal/interfaces"
+	"github.com/radiancelux/go-server/internal/models"
 )
 
 // InfoHandler handles info requests

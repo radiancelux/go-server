@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"go-server/internal/config"
-	"go-server/internal/server"
+	"github.com/radiancelux/go-server/internal/config"
+	"github.com/radiancelux/go-server/internal/server"
 )
 
 // BenchmarkServer represents a benchmark server instance

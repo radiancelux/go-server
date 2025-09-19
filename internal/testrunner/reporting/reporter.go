@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"go-server/internal/testrunner/types"
+	"github.com/radiancelux/go-server/internal/testrunner/types"
 )
 
 // MarkdownReporter generates markdown test reports

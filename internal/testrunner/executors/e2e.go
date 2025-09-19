@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"go-server/internal/testrunner/types"
+	"github.com/radiancelux/go-server/internal/testrunner/types"
 )
 
 // E2ETestExecutor handles end-to-end test execution

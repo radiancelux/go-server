@@ -24,7 +24,7 @@ func NewPostmanDocGenerator(baseURL string) *PostmanDocGenerator {
 
 // PostmanCollection represents a Postman collection
 type PostmanCollection struct {
-	Info PostmanInfo `json:"info"`
+	Info PostmanInfo   `json:"info"`
 	Item []PostmanItem `json:"item"`
 }
 
@@ -36,20 +36,20 @@ type PostmanInfo struct {
 
 // PostmanItem represents a collection item (folder or request)
 type PostmanItem struct {
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Item        []PostmanItem  `json:"item,omitempty"`
-	Request     *PostmanRequest `json:"request,omitempty"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	Item        []PostmanItem     `json:"item,omitempty"`
+	Request     *PostmanRequest   `json:"request,omitempty"`
 	Response    []PostmanResponse `json:"response,omitempty"`
-	Event       []PostmanEvent `json:"event,omitempty"`
+	Event       []PostmanEvent    `json:"event,omitempty"`
 }
 
 // PostmanRequest represents a Postman request
 type PostmanRequest struct {
-	Method string                 `json:"method"`
-	Header []PostmanHeader        `json:"header"`
-	Body   *PostmanRequestBody    `json:"body"`
-	URL    PostmanURL             `json:"url"`
+	Method string              `json:"method"`
+	Header []PostmanHeader     `json:"header"`
+	Body   *PostmanRequestBody `json:"body"`
+	URL    PostmanURL          `json:"url"`
 }
 
 // PostmanHeader represents a request header
@@ -74,15 +74,15 @@ type PostmanURL struct {
 
 // PostmanResponse represents a Postman response
 type PostmanResponse struct {
-	Name   string                 `json:"name"`
-	Status string                 `json:"status"`
-	Header []PostmanHeader        `json:"header"`
-	Body   string                 `json:"body"`
+	Name   string          `json:"name"`
+	Status string          `json:"status"`
+	Header []PostmanHeader `json:"header"`
+	Body   string          `json:"body"`
 }
 
 // PostmanEvent represents a Postman event (test scripts)
 type PostmanEvent struct {
-	Listen string `json:"listen"`
+	Listen string        `json:"listen"`
 	Script PostmanScript `json:"script"`
 }
 
@@ -273,7 +273,7 @@ func (g *PostmanDocGenerator) buildPath(url PostmanURL) string {
 		}
 		return path
 	}
-	
+
 	// Build from components
 	if len(url.Path) > 0 {
 		return "/" + strings.Join(url.Path, "/")
@@ -665,9 +665,9 @@ func (g *PostmanDocGenerator) generateHTML(doc *APIDocumentation) (string, error
 
 	// Create template with custom functions
 	funcMap := template.FuncMap{
-		"lower":      strings.ToLower,
-		"anchorize":  func(s string) string { return strings.ReplaceAll(strings.ToLower(s), " ", "-") },
-		"json":       func(s string) string { return s }, // Pass through JSON as-is
+		"lower":     strings.ToLower,
+		"anchorize": func(s string) string { return strings.ReplaceAll(strings.ToLower(s), " ", "-") },
+		"json":      func(s string) string { return s }, // Pass through JSON as-is
 	}
 
 	t, err := template.New("docs").Funcs(funcMap).Parse(tmpl)

@@ -12,10 +12,10 @@ import (
 // It implements the APIResponse interface and provides consistent
 // response formatting across all endpoints.
 type Response struct {
-	Status    string    `json:"status"`              // Response status (success/error)
-	Message   string    `json:"message"`             // Response message
-	Timestamp time.Time `json:"timestamp"`           // When the response was created
-	Data      any       `json:"data,omitempty"`      // Optional response data
+	Status    string    `json:"status"`         // Response status (success/error)
+	Message   string    `json:"message"`        // Response message
+	Timestamp time.Time `json:"timestamp"`      // When the response was created
+	Data      any       `json:"data,omitempty"` // Optional response data
 }
 
 // NewResponse creates a new Response instance with the provided values.
