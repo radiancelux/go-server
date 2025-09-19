@@ -26,17 +26,9 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Cache Go modules
-        uses: actions/cache@v4
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Initialize Go module
+      - name: Set up Go module
         run: |
-          go mod init go-server || true
+          go mod init go-server
           go mod tidy
 
       - name: Run linting
