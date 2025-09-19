@@ -40,7 +40,7 @@ jobs:
       - name: Run linting
         run: |
           go vet ./...
-          go fmt -d .
+          go fmt -l .
 
       - name: Run unit tests
         run: go test ./internal/... -v

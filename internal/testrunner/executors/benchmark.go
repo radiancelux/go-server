@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/radiancelux/go-server/internal/testrunner/types"
+	"go-server/internal/testrunner/types"
 )
 
 // BenchmarkTestExecutor handles benchmark test execution

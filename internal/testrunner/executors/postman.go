@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/radiancelux/go-server/internal/testrunner/types"
+	"go-server/internal/testrunner/types"
 )
 
 // PostmanTestExecutor handles Postman collection test execution

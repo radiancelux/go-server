@@ -1,6 +1,6 @@
 package handlers
 
-import "github.com/radiancelux/go-server/internal/interfaces"
+import "go-server/internal/interfaces"
 
 // Registry manages handler registration and retrieval
 type Registry struct {

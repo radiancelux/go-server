@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/radiancelux/go-server/internal/config"
-	"github.com/radiancelux/go-server/internal/server"
+	"go-server/internal/config"
+	"go-server/internal/server"
 )
 
 func main() {
