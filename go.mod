@@ -1,3 +1,3 @@
-module example.com/go-server
+module go-server
 
 go 1.21
