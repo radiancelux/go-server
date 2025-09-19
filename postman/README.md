@@ -82,17 +82,6 @@ newman run postman/Go-Server-API.postman_collection.json \
   --reporter-html-export test-results/postman-report.html
 ```
 
-#### Using Scripts
-
-```bash
-# Linux/Mac
-chmod +x scripts/run-postman-tests.sh
-./scripts/run-postman-tests.sh
-
-# Windows PowerShell
-.\scripts\run-postman-tests.ps1
-```
-
 #### Using Go Test Runner
 
 ```bash

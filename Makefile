@@ -126,8 +126,7 @@ bench:
 # Generate test report
 report:
 	@echo "📋 Generating test report..."
-	@chmod +x scripts/test.sh
-	@./scripts/test.sh
+	go run ./cmd/test -type all -v -coverage
 
 # Docker commands
 docker-build:
