@@ -83,10 +83,16 @@ curl -X POST http://localhost:8080/api \
 
 ## Documentation
 
-- **[Complete API Documentation](docs/API.md)** - Comprehensive API reference with examples
-- **[Quick Reference](docs/QuickReference.md)** - Quick lookup for endpoints and examples
+- **[Dynamic API Documentation](http://localhost:8080/docs)** - Interactive HTML documentation generated from Postman collection
 - **[Postman Collection](docs/Go-Server-API.postman_collection.json)** - Import into Postman for testing
 - **[OpenAPI Specification](api.yaml)** - Machine-readable API specification
+
+### Interactive Documentation Features
+
+- **Live API Testing** - Test endpoints directly from the browser
+- **Copy/Download Collection** - One-click Postman collection export
+- **Always Up-to-Date** - Generated from actual test collection
+- **Comprehensive Coverage** - All endpoints, security tests, and performance scenarios
 
 ## Development
 
