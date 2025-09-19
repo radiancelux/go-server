@@ -25,10 +25,10 @@ func (h *MetricsHandler) GetAction() string {
 // Handle processes the metrics request
 func (h *MetricsHandler) Handle(req interfaces.APIRequest) (interfaces.APIResponse, error) {
 	h.logger.Debug("Handling metrics request")
-	
+
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	metrics := map[string]any{
 		"memory": map[string]any{
 			"alloc_mb":        bToMb(m.Alloc),

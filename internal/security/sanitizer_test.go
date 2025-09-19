@@ -7,7 +7,7 @@ import (
 
 func TestSanitizer_SanitizeString(t *testing.T) {
 	sanitizer := NewSanitizer()
-	
+
 	tests := []struct {
 		name     string
 		input    string
@@ -44,7 +44,7 @@ func TestSanitizer_SanitizeString(t *testing.T) {
 			expected: strings.Repeat("a", 1000),
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := sanitizer.SanitizeString(tt.input)
@@ -57,7 +57,7 @@ func TestSanitizer_SanitizeString(t *testing.T) {
 
 func TestSanitizer_SanitizeEmail(t *testing.T) {
 	sanitizer := NewSanitizer()
-	
+
 	tests := []struct {
 		name     string
 		input    string
@@ -89,7 +89,7 @@ func TestSanitizer_SanitizeEmail(t *testing.T) {
 			expected: "",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := sanitizer.SanitizeEmail(tt.input)
@@ -102,7 +102,7 @@ func TestSanitizer_SanitizeEmail(t *testing.T) {
 
 func TestSanitizer_ValidateString(t *testing.T) {
 	sanitizer := NewSanitizer()
-	
+
 	tests := []struct {
 		name     string
 		input    string
@@ -139,7 +139,7 @@ func TestSanitizer_ValidateString(t *testing.T) {
 			expected: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := sanitizer.ValidateString(tt.input)
@@ -152,7 +152,7 @@ func TestSanitizer_ValidateString(t *testing.T) {
 
 func TestSanitizer_ValidateEmail(t *testing.T) {
 	sanitizer := NewSanitizer()
-	
+
 	tests := []struct {
 		name     string
 		input    string
@@ -184,7 +184,7 @@ func TestSanitizer_ValidateEmail(t *testing.T) {
 			expected: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := sanitizer.ValidateEmail(tt.input)

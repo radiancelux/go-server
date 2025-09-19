@@ -76,7 +76,7 @@ var (
 	ErrInvalidFormat  = NewAPIErrorWithCode(ErrorTypeValidation, "INVALID_FORMAT", "Invalid data format", http.StatusBadRequest)
 
 	// Not found errors
-	ErrNotFound = NewAPIError(ErrorTypeNotFound, "Resource not found", http.StatusNotFound)
+	ErrNotFound        = NewAPIError(ErrorTypeNotFound, "Resource not found", http.StatusNotFound)
 	ErrHandlerNotFound = NewAPIErrorWithCode(ErrorTypeNotFound, "HANDLER_NOT_FOUND", "Handler not found for action", http.StatusNotFound)
 
 	// Authentication/Authorization errors
@@ -99,7 +99,7 @@ func WrapError(err error, message string) *APIError {
 	if apiErr, ok := err.(*APIError); ok {
 		return apiErr
 	}
-	
+
 	return &APIError{
 		Type:       ErrorTypeInternal,
 		Message:    message,

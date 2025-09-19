@@ -24,7 +24,7 @@ func (h *VersionHandler) GetAction() string {
 // Handle processes the version request
 func (h *VersionHandler) Handle(req interfaces.APIRequest) (interfaces.APIResponse, error) {
 	h.logger.Debug("Handling version request")
-	
+
 	versionInfo := map[string]any{
 		"server":     "go-server",
 		"version":    "1.0.0",

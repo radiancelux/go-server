@@ -15,8 +15,8 @@ import (
 
 // TestServer represents a test server instance
 type TestServer struct {
-	server *server.Server
-	client *http.Client
+	server  *server.Server
+	client  *http.Client
 	baseURL string
 }
 
@@ -34,19 +34,19 @@ func NewTestServer(t *testing.T) *TestServer {
 			RateLimitBurst: 20000,
 		},
 	}
-	
+
 	srv := server.NewServer(cfg)
-	
+
 	// Start server in background
 	go func() {
 		if err := srv.Start(); err != nil {
 			t.Logf("Server error: %v", err)
 		}
 	}()
-	
+
 	// Wait for server to start
 	time.Sleep(100 * time.Millisecond)
-	
+
 	return &TestServer{
 		server:  srv,
 		client:  &http.Client{Timeout: 5 * time.Second},
@@ -58,36 +58,36 @@ func NewTestServer(t *testing.T) *TestServer {
 func TestHealthEndpoint(t *testing.T) {
 	ts := NewTestServer(t)
 	defer ts.cleanup()
-	
+
 	resp, err := ts.client.Get(ts.baseURL + "/health")
 	if err != nil {
 		t.Fatalf("Failed to make request: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode)
 	}
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("Failed to read response: %v", err)
 	}
-	
+
 	var response map[string]interface{}
 	if err := json.Unmarshal(body, &response); err != nil {
 		t.Fatalf("Failed to unmarshal response: %v", err)
 	}
-	
+
 	if response["status"] != "healthy" {
 		t.Errorf("Expected status 'healthy', got '%s'", response["status"])
 	}
-	
+
 	// Check for request ID header
 	if resp.Header.Get("X-Request-ID") == "" {
 		t.Error("Expected X-Request-ID header to be present")
 	}
-	
+
 	// Check for security headers
 	securityHeaders := []string{
 		"X-Content-Type-Options",
@@ -95,7 +95,7 @@ func TestHealthEndpoint(t *testing.T) {
 		"X-XSS-Protection",
 		"Referrer-Policy",
 	}
-	
+
 	for _, header := range securityHeaders {
 		if resp.Header.Get(header) == "" {
 			t.Errorf("Expected security header %s to be present", header)
@@ -107,11 +107,11 @@ func TestHealthEndpoint(t *testing.T) {
 func TestAPIEndpoint(t *testing.T) {
 	ts := NewTestServer(t)
 	defer ts.cleanup()
-	
+
 	tests := []struct {
-		name           string
-		request        map[string]interface{}
-		expectedStatus int
+		name                string
+		request             map[string]interface{}
+		expectedStatus      int
 		expectedStatusField string
 	}{
 		{
@@ -121,7 +121,7 @@ func TestAPIEndpoint(t *testing.T) {
 				"action":  "echo",
 				"user_id": 123,
 			},
-			expectedStatus: http.StatusOK,
+			expectedStatus:      http.StatusOK,
 			expectedStatusField: "success",
 		},
 		{
@@ -131,7 +131,7 @@ func TestAPIEndpoint(t *testing.T) {
 				"action":  "greet",
 				"user_id": 456,
 			},
-			expectedStatus: http.StatusOK,
+			expectedStatus:      http.StatusOK,
 			expectedStatusField: "success",
 		},
 		{
@@ -141,7 +141,7 @@ func TestAPIEndpoint(t *testing.T) {
 				"action":  "invalid_action",
 				"user_id": 123,
 			},
-			expectedStatus: http.StatusNotFound,
+			expectedStatus:      http.StatusNotFound,
 			expectedStatusField: "error",
 		},
 		{
@@ -149,11 +149,11 @@ func TestAPIEndpoint(t *testing.T) {
 			request: map[string]interface{}{
 				"action": "echo",
 			},
-			expectedStatus: http.StatusBadRequest,
+			expectedStatus:      http.StatusBadRequest,
 			expectedStatusField: "error",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			jsonBody, _ := json.Marshal(tt.request)
@@ -162,27 +162,27 @@ func TestAPIEndpoint(t *testing.T) {
 				t.Fatalf("Failed to create request: %v", err)
 			}
 			req.Header.Set("Content-Type", "application/json")
-			
+
 			resp, err := ts.client.Do(req)
 			if err != nil {
 				t.Fatalf("Failed to make request: %v", err)
 			}
 			defer resp.Body.Close()
-			
+
 			if resp.StatusCode != tt.expectedStatus {
 				t.Errorf("Expected status %d, got %d", tt.expectedStatus, resp.StatusCode)
 			}
-			
+
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Fatalf("Failed to read response: %v", err)
 			}
-			
+
 			var response map[string]interface{}
 			if err := json.Unmarshal(body, &response); err != nil {
 				t.Fatalf("Failed to unmarshal response: %v", err)
 			}
-			
+
 			// For error cases, check if we have a status field or if it's an error response
 			if tt.expectedStatusField == "error" {
 				if response["status"] != nil && response["status"] != "error" {
@@ -201,37 +201,37 @@ func TestAPIEndpoint(t *testing.T) {
 func TestVersionEndpoint(t *testing.T) {
 	ts := NewTestServer(t)
 	defer ts.cleanup()
-	
+
 	resp, err := ts.client.Get(ts.baseURL + "/version")
 	if err != nil {
 		t.Fatalf("Failed to make request: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode)
 	}
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("Failed to read response: %v", err)
 	}
-	
+
 	var response map[string]interface{}
 	if err := json.Unmarshal(body, &response); err != nil {
 		t.Fatalf("Failed to unmarshal response: %v", err)
 	}
-	
+
 	if response["status"] != "success" {
 		t.Errorf("Expected status 'success', got '%s'", response["status"])
 	}
-	
+
 	// Check for required fields in data
 	data, ok := response["data"].(map[string]interface{})
 	if !ok {
 		t.Fatal("Expected data field to be an object")
 	}
-	
+
 	requiredFields := []string{"server", "version", "go_version", "os", "arch"}
 	for _, field := range requiredFields {
 		if data[field] == nil {
@@ -244,37 +244,37 @@ func TestVersionEndpoint(t *testing.T) {
 func TestMetricsEndpoint(t *testing.T) {
 	ts := NewTestServer(t)
 	defer ts.cleanup()
-	
+
 	resp, err := ts.client.Get(ts.baseURL + "/metrics")
 	if err != nil {
 		t.Fatalf("Failed to make request: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode)
 	}
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("Failed to read response: %v", err)
 	}
-	
+
 	var response map[string]interface{}
 	if err := json.Unmarshal(body, &response); err != nil {
 		t.Fatalf("Failed to unmarshal response: %v", err)
 	}
-	
+
 	if response["status"] != "success" {
 		t.Errorf("Expected status 'success', got '%s'", response["status"])
 	}
-	
+
 	// Check for required fields in data
 	data, ok := response["data"].(map[string]interface{})
 	if !ok {
 		t.Fatal("Expected data field to be an object")
 	}
-	
+
 	requiredFields := []string{"memory", "runtime"}
 	for _, field := range requiredFields {
 		if data[field] == nil {
@@ -287,31 +287,31 @@ func TestMetricsEndpoint(t *testing.T) {
 func TestCORSEndpoint(t *testing.T) {
 	ts := NewTestServer(t)
 	defer ts.cleanup()
-	
+
 	// Test OPTIONS request
 	req, err := http.NewRequest("OPTIONS", ts.baseURL+"/api", nil)
 	if err != nil {
 		t.Fatalf("Failed to create request: %v", err)
 	}
 	req.Header.Set("Origin", "https://example.com")
-	
+
 	resp, err := ts.client.Do(req)
 	if err != nil {
 		t.Fatalf("Failed to make request: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode)
 	}
-	
+
 	// Check CORS headers
 	corsHeaders := []string{
 		"Access-Control-Allow-Origin",
 		"Access-Control-Allow-Methods",
 		"Access-Control-Allow-Headers",
 	}
-	
+
 	for _, header := range corsHeaders {
 		if resp.Header.Get(header) == "" {
 			t.Errorf("Expected CORS header %s to be present", header)
@@ -323,31 +323,31 @@ func TestCORSEndpoint(t *testing.T) {
 func TestRequestSizeLimit(t *testing.T) {
 	ts := NewTestServer(t)
 	defer ts.cleanup()
-	
+
 	// Create a large request body (2MB)
 	largeBody := make([]byte, 2*1024*1024)
 	for i := range largeBody {
 		largeBody[i] = 'x'
 	}
-	
+
 	request := map[string]interface{}{
 		"message": string(largeBody),
 		"action":  "echo",
 	}
-	
+
 	jsonBody, _ := json.Marshal(request)
 	req, err := http.NewRequest("POST", ts.baseURL+"/api", bytes.NewBuffer(jsonBody))
 	if err != nil {
 		t.Fatalf("Failed to create request: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	resp, err := ts.client.Do(req)
 	if err != nil {
 		t.Fatalf("Failed to make request: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	// Should be rejected due to size limit
 	if resp.StatusCode != http.StatusBadRequest {
 		t.Errorf("Expected status 400 for large request, got %d", resp.StatusCode)

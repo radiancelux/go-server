@@ -56,21 +56,23 @@ func NewCORSHandler(config CORSConfig) *CORSHandler {
 // HandleCORS handles CORS preflight and actual requests
 func (c *CORSHandler) HandleCORS(w http.ResponseWriter, r *http.Request) bool {
 	origin := r.Header.Get("Origin")
-	
-	// Check if origin is allowed
-	if !c.isOriginAllowed(origin) {
-		return false
-	}
-	
-	// Set CORS headers
-	c.setCORSHeaders(w, origin)
-	
-	// Handle preflight request
+
+	// Handle preflight request first
 	if r.Method == http.MethodOptions {
+		// Set CORS headers for preflight
+		c.setCORSHeaders(w, origin)
 		w.WriteHeader(http.StatusOK)
 		return true
 	}
-	
+
+	// For non-OPTIONS requests, check if origin is allowed
+	if !c.isOriginAllowed(origin) {
+		return false
+	}
+
+	// Set CORS headers
+	c.setCORSHeaders(w, origin)
+
 	return false
 }
 
@@ -79,7 +81,7 @@ func (c *CORSHandler) isOriginAllowed(origin string) bool {
 	if origin == "" {
 		return false
 	}
-	
+
 	// Check for wildcard
 	for _, allowedOrigin := range c.config.AllowedOrigins {
 		if allowedOrigin == "*" {
@@ -89,39 +91,39 @@ func (c *CORSHandler) isOriginAllowed(origin string) bool {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
 // setCORSHeaders sets the CORS headers
 func (c *CORSHandler) setCORSHeaders(w http.ResponseWriter, origin string) {
 	// Set Access-Control-Allow-Origin
-	if c.config.AllowedOrigins[0] == "*" {
+	if len(c.config.AllowedOrigins) > 0 && c.config.AllowedOrigins[0] == "*" {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	} else {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 	}
-	
+
 	// Set Access-Control-Allow-Methods
 	if len(c.config.AllowedMethods) > 0 {
 		w.Header().Set("Access-Control-Allow-Methods", strings.Join(c.config.AllowedMethods, ", "))
 	}
-	
+
 	// Set Access-Control-Allow-Headers
 	if len(c.config.AllowedHeaders) > 0 {
 		w.Header().Set("Access-Control-Allow-Headers", strings.Join(c.config.AllowedHeaders, ", "))
 	}
-	
+
 	// Set Access-Control-Expose-Headers
 	if len(c.config.ExposedHeaders) > 0 {
 		w.Header().Set("Access-Control-Expose-Headers", strings.Join(c.config.ExposedHeaders, ", "))
 	}
-	
+
 	// Set Access-Control-Allow-Credentials
 	if c.config.AllowCredentials {
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 	}
-	
+
 	// Set Access-Control-Max-Age
 	if c.config.MaxAge > 0 {
 		w.Header().Set("Access-Control-Max-Age", fmt.Sprintf("%d", c.config.MaxAge))
@@ -131,14 +133,14 @@ func (c *CORSHandler) setCORSHeaders(w http.ResponseWriter, origin string) {
 // CORSMiddleware creates a CORS middleware
 func CORSMiddleware(config CORSConfig) func(http.Handler) http.Handler {
 	corsHandler := NewCORSHandler(config)
-	
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Handle CORS
 			if corsHandler.HandleCORS(w, r) {
 				return
 			}
-			
+
 			// Continue to next handler
 			next.ServeHTTP(w, r)
 		})
@@ -151,7 +153,7 @@ func ValidateCORSRequest(r *http.Request, config CORSConfig) bool {
 	if origin == "" {
 		return true // No origin header, not a CORS request
 	}
-	
+
 	corsHandler := NewCORSHandler(config)
 	return corsHandler.isOriginAllowed(origin)
 }

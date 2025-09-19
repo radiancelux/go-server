@@ -25,22 +25,22 @@ func (h *ConfigHandler) GetAction() string {
 // Handle processes the config request
 func (h *ConfigHandler) Handle(req interfaces.APIRequest) (interfaces.APIResponse, error) {
 	h.logger.Debug("Handling config request")
-	
+
 	config := map[string]any{
 		"server": map[string]any{
 			"port": h.port,
 			"host": "localhost",
 		},
 		"environment": map[string]any{
-			"go_env":     os.Getenv("GO_ENV"),
-			"port":       os.Getenv("PORT"),
-			"log_level":  os.Getenv("LOG_LEVEL"),
+			"go_env":    os.Getenv("GO_ENV"),
+			"port":      os.Getenv("PORT"),
+			"log_level": os.Getenv("LOG_LEVEL"),
 		},
 		"features": map[string]any{
-			"graceful_shutdown": true,
+			"graceful_shutdown":  true,
 			"request_validation": true,
 			"structured_logging": true,
-			"metrics": true,
+			"metrics":            true,
 		},
 	}
 

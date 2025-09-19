@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  go-server-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./test-results:/app/test-results
+    environment:
+      - CGO_ENABLED=0
+    command: ["./test-runner", "-type", "all", "-v", "-coverage"]
+    networks:
+      - test-network
+
+  # Integration test with running server
+  go-server:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - LOG_LEVEL=info
+      - SERVER_PORT=8080
+    networks:
+      - test-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  integration-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      go-server:
+        condition: service_healthy
+    volumes:
+      - ./test-results:/app/test-results
+    environment:
+      - SERVER_URL=http://go-server:8080
+    command: ["./test-runner", "-type", "integration,e2e", "-v"]
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge

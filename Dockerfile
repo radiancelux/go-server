@@ -34,8 +34,8 @@ WORKDIR /app
 # Copy the binary from builder stage
 COPY --from=builder /app/main .
 
-# Copy any static files if needed (if they exist)
-# COPY --from=builder /app/README.md .
+# Copy Postman collection for documentation generation
+COPY --from=builder /app/postman ./postman
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app

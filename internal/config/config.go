@@ -36,12 +36,12 @@ type SecurityConfig struct {
 	RateLimitBurst int
 	EnableCORS     bool
 	CORSOrigins    []string
-	
+
 	// Input validation
 	EnableInputValidation bool
 	MaxStringLength       int
 	MaxEmailLength        int
-	
+
 	// Security headers
 	EnableSecurityHeaders bool
 	ContentSecurityPolicy string
@@ -67,12 +67,12 @@ func Load() (*Config, error) {
 			RateLimitBurst: getIntEnv("RATE_LIMIT_BURST", 200),
 			EnableCORS:     getBoolEnv("ENABLE_CORS", true),
 			CORSOrigins:    getStringSliceEnv("CORS_ORIGINS", []string{"*"}),
-			
+
 			// Input validation
 			EnableInputValidation: getBoolEnv("ENABLE_INPUT_VALIDATION", true),
 			MaxStringLength:       getIntEnv("MAX_STRING_LENGTH", 1000),
 			MaxEmailLength:        getIntEnv("MAX_EMAIL_LENGTH", 254),
-			
+
 			// Security headers
 			EnableSecurityHeaders: getBoolEnv("ENABLE_SECURITY_HEADERS", true),
 			ContentSecurityPolicy: getEnv("CONTENT_SECURITY_POLICY", "default-src 'self'"),

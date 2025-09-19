@@ -20,43 +20,43 @@ func (c *Converter) ConvertFile(filename string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	return c.ConvertMarkdownToHTML(string(content)), nil
 }
 
 // ConvertMarkdownToHTML converts basic markdown to HTML.
 func (c *Converter) ConvertMarkdownToHTML(markdown string) string {
 	html := markdown
-	
+
 	// Headers
 	html = strings.ReplaceAll(html, "# ", "<h1>")
 	html = strings.ReplaceAll(html, "## ", "<h2>")
 	html = strings.ReplaceAll(html, "### ", "<h3>")
 	html = strings.ReplaceAll(html, "#### ", "<h4>")
-	
+
 	// Close headers
 	html = strings.ReplaceAll(html, "\n# ", "</h1>\n# ")
 	html = strings.ReplaceAll(html, "\n## ", "</h2>\n## ")
 	html = strings.ReplaceAll(html, "\n### ", "</h3>\n### ")
 	html = strings.ReplaceAll(html, "\n#### ", "</h4>\n#### ")
-	
+
 	// Code blocks
 	html = strings.ReplaceAll(html, "```json", "<pre><code class=\"language-json\">")
 	html = strings.ReplaceAll(html, "```bash", "<pre><code class=\"language-bash\">")
 	html = strings.ReplaceAll(html, "```", "</code></pre>")
-	
+
 	// Inline code
 	html = strings.ReplaceAll(html, "`", "<code>")
 	html = strings.ReplaceAll(html, "<code>", "<code>")
 	html = strings.ReplaceAll(html, "</code>", "</code>")
-	
+
 	// Bold text
 	html = strings.ReplaceAll(html, "**", "<strong>")
 	html = strings.ReplaceAll(html, "**", "</strong>")
-	
+
 	// Line breaks
 	html = strings.ReplaceAll(html, "\n", "<br>\n")
-	
+
 	// Wrap in HTML structure
 	return c.wrapInHTML(html)
 }

@@ -44,6 +44,21 @@ services:
     profiles:
       - production
 
+  # Test services
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./test-results:/app/test-results
+    environment:
+      - CGO_ENABLED=0
+    command: ["./test-runner", "-type", "all", "-v", "-coverage"]
+    networks:
+      - go-server-network
+    profiles:
+      - test
+
 networks:
   go-server-network:
     driver: bridge

@@ -24,7 +24,7 @@ func (h *InfoHandler) GetAction() string {
 // Handle processes the info request
 func (h *InfoHandler) Handle(req interfaces.APIRequest) (interfaces.APIResponse, error) {
 	h.logger.Debug("Handling info request: %s", req.GetMessage())
-	
+
 	return models.NewSuccessResponse("Server information", map[string]any{
 		"server":     "go-server",
 		"version":    "1.0.0",

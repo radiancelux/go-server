@@ -34,10 +34,10 @@ func NewRateLimiter(config RateLimitConfig) *RateLimiter {
 		window:   config.WindowDuration,
 		cleanup:  config.CleanupInterval,
 	}
-	
+
 	// Start cleanup goroutine
 	go rl.cleanupExpired()
-	
+
 	return rl
 }
 
@@ -45,16 +45,16 @@ func NewRateLimiter(config RateLimitConfig) *RateLimiter {
 func (rl *RateLimiter) IsAllowed(ip string) bool {
 	rl.mutex.Lock()
 	defer rl.mutex.Unlock()
-	
+
 	now := time.Now()
 	cutoff := now.Add(-rl.window)
-	
+
 	// Get existing requests for this IP
 	requests, exists := rl.requests[ip]
 	if !exists {
 		requests = make([]time.Time, 0)
 	}
-	
+
 	// Remove old requests outside the window
 	var validRequests []time.Time
 	for _, reqTime := range requests {
@@ -62,16 +62,16 @@ func (rl *RateLimiter) IsAllowed(ip string) bool {
 			validRequests = append(validRequests, reqTime)
 		}
 	}
-	
+
 	// Check if under limit
 	if len(validRequests) >= rl.limit {
 		return false
 	}
-	
+
 	// Add current request
 	validRequests = append(validRequests, now)
 	rl.requests[ip] = validRequests
-	
+
 	return true
 }
 
@@ -79,15 +79,15 @@ func (rl *RateLimiter) IsAllowed(ip string) bool {
 func (rl *RateLimiter) GetRemainingRequests(ip string) int {
 	rl.mutex.RLock()
 	defer rl.mutex.RUnlock()
-	
+
 	now := time.Now()
 	cutoff := now.Add(-rl.window)
-	
+
 	requests, exists := rl.requests[ip]
 	if !exists {
 		return rl.limit
 	}
-	
+
 	// Count valid requests
 	validCount := 0
 	for _, reqTime := range requests {
@@ -95,12 +95,12 @@ func (rl *RateLimiter) GetRemainingRequests(ip string) int {
 			validCount++
 		}
 	}
-	
+
 	remaining := rl.limit - validCount
 	if remaining < 0 {
 		return 0
 	}
-	
+
 	return remaining
 }
 
@@ -108,15 +108,15 @@ func (rl *RateLimiter) GetRemainingRequests(ip string) int {
 func (rl *RateLimiter) GetResetTime(ip string) time.Time {
 	rl.mutex.RLock()
 	defer rl.mutex.RUnlock()
-	
+
 	now := time.Now()
 	cutoff := now.Add(-rl.window)
-	
+
 	requests, exists := rl.requests[ip]
 	if !exists {
 		return now.Add(rl.window)
 	}
-	
+
 	// Find the oldest valid request
 	var oldestTime time.Time
 	for _, reqTime := range requests {
@@ -126,11 +126,11 @@ func (rl *RateLimiter) GetResetTime(ip string) time.Time {
 			}
 		}
 	}
-	
+
 	if oldestTime.IsZero() {
 		return now.Add(rl.window)
 	}
-	
+
 	return oldestTime.Add(rl.window)
 }
 
@@ -138,12 +138,12 @@ func (rl *RateLimiter) GetResetTime(ip string) time.Time {
 func (rl *RateLimiter) cleanupExpired() {
 	ticker := time.NewTicker(rl.cleanup)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		rl.mutex.Lock()
 		now := time.Now()
 		cutoff := now.Add(-rl.window)
-		
+
 		for ip, requests := range rl.requests {
 			var validRequests []time.Time
 			for _, reqTime := range requests {
@@ -151,7 +151,7 @@ func (rl *RateLimiter) cleanupExpired() {
 					validRequests = append(validRequests, reqTime)
 				}
 			}
-			
+
 			if len(validRequests) == 0 {
 				delete(rl.requests, ip)
 			} else {
@@ -175,18 +175,18 @@ func GetClientIP(r *http.Request) string {
 			return xff
 		}
 	}
-	
+
 	// Check X-Real-IP header
 	if xri := r.Header.Get("X-Real-IP"); xri != "" {
 		return strings.TrimSpace(xri)
 	}
-	
+
 	// Fall back to RemoteAddr
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		return r.RemoteAddr
 	}
-	
+
 	return ip
 }
 
@@ -195,28 +195,28 @@ func RateLimitMiddleware(rateLimiter *RateLimiter) func(http.Handler) http.Handl
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			clientIP := GetClientIP(r)
-			
+
 			if !rateLimiter.IsAllowed(clientIP) {
 				remaining := rateLimiter.GetRemainingRequests(clientIP)
 				resetTime := rateLimiter.GetResetTime(clientIP)
-				
+
 				w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", rateLimiter.limit))
 				w.Header().Set("X-RateLimit-Remaining", fmt.Sprintf("%d", remaining))
 				w.Header().Set("X-RateLimit-Reset", fmt.Sprintf("%d", resetTime.Unix()))
 				w.Header().Set("Retry-After", fmt.Sprintf("%d", int(time.Until(resetTime).Seconds())))
-				
+
 				http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 				return
 			}
-			
+
 			// Add rate limit headers to successful requests
 			remaining := rateLimiter.GetRemainingRequests(clientIP)
 			resetTime := rateLimiter.GetResetTime(clientIP)
-			
+
 			w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", rateLimiter.limit))
 			w.Header().Set("X-RateLimit-Remaining", fmt.Sprintf("%d", remaining))
 			w.Header().Set("X-RateLimit-Reset", fmt.Sprintf("%d", resetTime.Unix()))
-			
+
 			next.ServeHTTP(w, r)
 		})
 	}

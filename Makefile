@@ -1,7 +1,7 @@
 # Go Server Makefile
 # Provides easy commands for testing, building, and running the server
 
-.PHONY: help test test-unit test-integration test-e2e test-performance test-coverage test-all lint build run clean
+.PHONY: help test test-unit test-integration test-e2e test-performance test-coverage test-all lint build run clean test-docker test-docker-integration
 
 # Default target
 help:
@@ -9,13 +9,16 @@ help:
 	@echo "=============================="
 	@echo ""
 	@echo "Testing:"
-	@echo "  test              - Run all tests"
+	@echo "  test              - Run all tests (go test)"
 	@echo "  test-unit         - Run unit tests only"
 	@echo "  test-integration  - Run integration tests only"
 	@echo "  test-e2e          - Run end-to-end tests only"
 	@echo "  test-performance  - Run performance tests only"
 	@echo "  test-coverage     - Run tests with coverage report"
-	@echo "  test-all          - Run comprehensive test suite"
+	@echo "  test-postman      - Run Postman collection tests"
+	@echo "  test-all          - Run comprehensive test suite (Go runner)"
+	@echo "  test-docker       - Run tests in Docker container"
+	@echo "  test-docker-integration - Run integration tests with Docker"
 	@echo ""
 	@echo "Development:"
 	@echo "  lint              - Run linting checks"
@@ -60,11 +63,15 @@ test-coverage:
 	go tool cover -html=coverage.out -o coverage.html
 	@echo "📊 Coverage report generated: coverage.html"
 
+# Run Postman collection tests
+test-postman:
+	@echo "📮 Running Postman collection tests..."
+	go run ./cmd/test -type postman -v
+
 # Run comprehensive test suite
 test-all:
 	@echo "🚀 Running comprehensive test suite..."
-	@chmod +x scripts/test.sh
-	@./scripts/test.sh
+	go run ./cmd/test -type all -v -coverage
 
 # Run linting
 lint:
@@ -81,6 +88,17 @@ build:
 run:
 	@echo "🚀 Starting server..."
 	go run main.go
+
+# Docker-based testing
+test-docker:
+	@echo "🐳 Running tests in Docker container..."
+	@docker-compose --profile test up --build test
+	@docker-compose --profile test down
+
+test-docker-integration:
+	@echo "🐳 Running integration tests with Docker..."
+	@docker-compose -f docker-compose.test.yml up --build
+	@docker-compose -f docker-compose.test.yml down
 
 # Clean build artifacts
 clean:

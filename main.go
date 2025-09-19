@@ -16,7 +16,7 @@ func main() {
 
 	// Create and start the server
 	srv := server.NewServer(cfg)
-	
+
 	if err := srv.Start(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

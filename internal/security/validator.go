@@ -17,8 +17,8 @@ type ValidationError struct {
 
 // ValidationResult holds validation results
 type ValidationResult struct {
-	Valid   bool              `json:"valid"`
-	Errors  []ValidationError `json:"errors,omitempty"`
+	Valid    bool              `json:"valid"`
+	Errors   []ValidationError `json:"errors,omitempty"`
 	Warnings []ValidationError `json:"warnings,omitempty"`
 }
 
@@ -38,18 +38,18 @@ func NewValidator() *Validator {
 func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 	var errors []ValidationError
 	var warnings []ValidationError
-	
+
 	// Validate HTTP method
-	if r.Method != http.MethodGet && r.Method != http.MethodPost && 
-	   r.Method != http.MethodPut && r.Method != http.MethodDelete && 
-	   r.Method != http.MethodOptions {
+	if r.Method != http.MethodGet && r.Method != http.MethodPost &&
+		r.Method != http.MethodPut && r.Method != http.MethodDelete &&
+		r.Method != http.MethodOptions {
 		errors = append(errors, ValidationError{
 			Field:   "method",
 			Message: "Invalid HTTP method",
 			Value:   r.Method,
 		})
 	}
-	
+
 	// Validate Content-Type for POST/PUT requests
 	if r.Method == http.MethodPost || r.Method == http.MethodPut {
 		contentType := r.Header.Get("Content-Type")
@@ -61,7 +61,7 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 			})
 		}
 	}
-	
+
 	// Validate Content-Length
 	contentLength := r.Header.Get("Content-Length")
 	if contentLength != "" {
@@ -75,7 +75,7 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 			}
 		}
 	}
-	
+
 	// Validate User-Agent
 	userAgent := r.Header.Get("User-Agent")
 	if userAgent == "" {
@@ -90,7 +90,7 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 			Value:   userAgent[:50] + "...",
 		})
 	}
-	
+
 	// Validate URL path
 	if !v.isValidPath(r.URL.Path) {
 		errors = append(errors, ValidationError{
@@ -99,7 +99,7 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 			Value:   r.URL.Path,
 		})
 	}
-	
+
 	// Validate query parameters
 	for key, values := range r.URL.Query() {
 		if len(key) > 100 {
@@ -109,7 +109,7 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 				Value:   key,
 			})
 		}
-		
+
 		for _, value := range values {
 			if len(value) > 1000 {
 				errors = append(errors, ValidationError{
@@ -118,7 +118,7 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 					Value:   value[:50] + "...",
 				})
 			}
-			
+
 			if !v.sanitizer.ValidateString(value) {
 				errors = append(errors, ValidationError{
 					Field:   "query." + key,
@@ -128,7 +128,7 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 			}
 		}
 	}
-	
+
 	return ValidationResult{
 		Valid:    len(errors) == 0,
 		Errors:   errors,
@@ -140,13 +140,13 @@ func (v *Validator) ValidateRequest(r *http.Request) ValidationResult {
 func (v *Validator) ValidateJSONRequest(r *http.Request, target interface{}) ValidationResult {
 	var errors []ValidationError
 	var warnings []ValidationError
-	
+
 	// First validate the basic request
 	basicResult := v.ValidateRequest(r)
 	if !basicResult.Valid {
 		return basicResult
 	}
-	
+
 	// Validate JSON body
 	if r.Body == nil {
 		errors = append(errors, ValidationError{
@@ -155,11 +155,11 @@ func (v *Validator) ValidateJSONRequest(r *http.Request, target interface{}) Val
 		})
 		return ValidationResult{Valid: false, Errors: errors}
 	}
-	
+
 	// Decode JSON
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
-	
+
 	if err := decoder.Decode(target); err != nil {
 		errors = append(errors, ValidationError{
 			Field:   "body",
@@ -167,11 +167,11 @@ func (v *Validator) ValidateJSONRequest(r *http.Request, target interface{}) Val
 		})
 		return ValidationResult{Valid: false, Errors: errors}
 	}
-	
+
 	// Validate specific fields based on target type
 	fieldErrors := v.validateFields(target)
 	errors = append(errors, fieldErrors...)
-	
+
 	return ValidationResult{
 		Valid:    len(errors) == 0,
 		Errors:   errors,
@@ -182,20 +182,20 @@ func (v *Validator) ValidateJSONRequest(r *http.Request, target interface{}) Val
 // validateFields validates specific fields in the target struct
 func (v *Validator) validateFields(target interface{}) []ValidationError {
 	var errors []ValidationError
-	
+
 	// This is a simplified version - in a real implementation,
 	// you would use reflection or a validation library like go-playground/validator
-	
+
 	// For now, we'll add basic validation for common fields
 	// In a real implementation, you would use struct tags and reflection
-	
+
 	return errors
 }
 
 // ValidateString validates a string field
 func (v *Validator) ValidateString(value, fieldName string, required bool, maxLength int) []ValidationError {
 	var errors []ValidationError
-	
+
 	if required && strings.TrimSpace(value) == "" {
 		errors = append(errors, ValidationError{
 			Field:   fieldName,
@@ -203,7 +203,7 @@ func (v *Validator) ValidateString(value, fieldName string, required bool, maxLe
 		})
 		return errors
 	}
-	
+
 	if value != "" {
 		if len(value) > maxLength {
 			errors = append(errors, ValidationError{
@@ -212,7 +212,7 @@ func (v *Validator) ValidateString(value, fieldName string, required bool, maxLe
 				Value:   value,
 			})
 		}
-		
+
 		if !v.sanitizer.ValidateString(value) {
 			errors = append(errors, ValidationError{
 				Field:   fieldName,
@@ -221,14 +221,14 @@ func (v *Validator) ValidateString(value, fieldName string, required bool, maxLe
 			})
 		}
 	}
-	
+
 	return errors
 }
 
 // ValidateEmail validates an email field
 func (v *Validator) ValidateEmail(value, fieldName string, required bool) []ValidationError {
 	var errors []ValidationError
-	
+
 	if required && strings.TrimSpace(value) == "" {
 		errors = append(errors, ValidationError{
 			Field:   fieldName,
@@ -236,7 +236,7 @@ func (v *Validator) ValidateEmail(value, fieldName string, required bool) []Vali
 		})
 		return errors
 	}
-	
+
 	if value != "" {
 		if !v.sanitizer.ValidateEmail(value) {
 			errors = append(errors, ValidationError{
@@ -246,14 +246,14 @@ func (v *Validator) ValidateEmail(value, fieldName string, required bool) []Vali
 			})
 		}
 	}
-	
+
 	return errors
 }
 
 // ValidateInteger validates an integer field
 func (v *Validator) ValidateInteger(value, fieldName string, required bool, min, max int) []ValidationError {
 	var errors []ValidationError
-	
+
 	if required && strings.TrimSpace(value) == "" {
 		errors = append(errors, ValidationError{
 			Field:   fieldName,
@@ -261,7 +261,7 @@ func (v *Validator) ValidateInteger(value, fieldName string, required bool, min,
 		})
 		return errors
 	}
-	
+
 	if value != "" {
 		intValue, err := strconv.Atoi(value)
 		if err != nil {
@@ -280,7 +280,7 @@ func (v *Validator) ValidateInteger(value, fieldName string, required bool, min,
 			}
 		}
 	}
-	
+
 	return errors
 }
 
@@ -290,17 +290,17 @@ func (v *Validator) isValidPath(path string) bool {
 	if len(path) > 1000 {
 		return false
 	}
-	
+
 	// Check for path traversal attempts
 	if strings.Contains(path, "..") || strings.Contains(path, "//") {
 		return false
 	}
-	
+
 	// Check for null bytes
 	if strings.Contains(path, "\x00") {
 		return false
 	}
-	
+
 	return true
 }
 
@@ -308,17 +308,17 @@ func (v *Validator) isValidPath(path string) bool {
 func WriteValidationError(w http.ResponseWriter, result ValidationResult) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
-	
+
 	response := map[string]interface{}{
-		"status": "error",
-		"type":   "validation_error",
+		"status":  "error",
+		"type":    "validation_error",
 		"message": "Validation failed",
-		"errors": result.Errors,
+		"errors":  result.Errors,
 	}
-	
+
 	if len(result.Warnings) > 0 {
 		response["warnings"] = result.Warnings
 	}
-	
+
 	json.NewEncoder(w).Encode(response)
 }

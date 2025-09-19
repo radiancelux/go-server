@@ -23,7 +23,7 @@ func (h *EchoHandler) GetAction() string {
 // Handle processes the echo request
 func (h *EchoHandler) Handle(req interfaces.APIRequest) (interfaces.APIResponse, error) {
 	h.logger.Debug("Handling echo request: %s", req.GetMessage())
-	
+
 	return models.NewSuccessResponse("Echo successful", map[string]string{
 		"echoed_message": req.GetMessage(),
 	}), nil

@@ -24,7 +24,7 @@ func (h *GreetHandler) GetAction() string {
 // Handle processes the greet request
 func (h *GreetHandler) Handle(req interfaces.APIRequest) (interfaces.APIResponse, error) {
 	h.logger.Debug("Handling greet request from user %d: %s", req.GetUserID(), req.GetMessage())
-	
+
 	greeting := fmt.Sprintf("Hello! You said: %s", req.GetMessage())
 	if req.GetUserID() > 0 {
 		greeting = fmt.Sprintf("Hello User %d! You said: %s", req.GetUserID(), req.GetMessage())
